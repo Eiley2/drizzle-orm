@@ -28,7 +28,7 @@ import {
 import { assertOrmCoreVersion, assertPackages, assertStudioNodeVersion, ormVersionGt } from './utils';
 import { assertCollisions, drivers, prefixes } from './validations/common';
 import { withStyle } from './validations/outputs';
-import { error, grey, MigrateProgress } from './views';
+import { MigrateProgress, error, grey } from './views';
 
 const optionDialect = string('dialect')
 	.enum(...dialects)
@@ -810,9 +810,10 @@ export const exportRaw = command({
 		config: optionConfig,
 		dialect: optionDialect,
 		schema: string().desc('Path to a schema file or folder'),
+		casing: optionCasing,
 	},
 	transform: async (opts) => {
-		const from = assertCollisions('export', opts, ['sql'], ['dialect', 'schema']);
+		const from = assertCollisions('export', opts, ['sql'], ['dialect', 'schema', 'casing']);
 		return prepareExportConfig(opts, from);
 	},
 	handler: async (opts) => {
@@ -829,6 +830,9 @@ export const exportRaw = command({
 			'./commands/migrate'
 		);
 
+		console.log(
+			opts
+		)
 		const dialect = opts.dialect;
 		if (dialect === 'postgresql') {
 			await prepareAndExportPg(opts);

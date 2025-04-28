@@ -12,14 +12,13 @@ import {
 	Casing,
 	CasingType,
 	CliConfig,
-	configCommonSchema,
-	configMigrations,
 	Driver,
 	Prefix,
+	configCommonSchema,
+	configMigrations,
 	wrapParam,
 } from '../validations/common';
-import { GelCredentials, gelCredentials } from '../validations/gel';
-import { printConfigConnectionIssues as printIssuesGel } from '../validations/gel';
+import { GelCredentials, gelCredentials, printConfigConnectionIssues as printIssuesGel } from '../validations/gel';
 import {
 	LibSQLCredentials,
 	libSQLCredentials,
@@ -37,17 +36,17 @@ import {
 	printConfigConnectionIssues as printIssuesPg,
 } from '../validations/postgres';
 import {
-	printConfigConnectionIssues as printIssuesSingleStore,
 	SingleStoreCredentials,
+	printConfigConnectionIssues as printIssuesSingleStore,
 	singlestoreCredentials,
 } from '../validations/singlestore';
 import {
-	printConfigConnectionIssues as printIssuesSqlite,
 	SqliteCredentials,
+	printConfigConnectionIssues as printIssuesSqlite,
 	sqliteCredentials,
 } from '../validations/sqlite';
 import { studioCliParams, studioConfig } from '../validations/studio';
-import { error, grey } from '../views';
+import { error } from '../views';
 
 // NextJs default config is target: es5, which esbuild-register can't consume
 const assertES5 = async (unregister: () => void) => {
@@ -154,6 +153,7 @@ export type ExportConfig = {
 	dialect: Dialect;
 	schema: string | string[];
 	sql: boolean;
+	casing?: CasingType;
 };
 
 export const prepareGenerateConfig = async (
@@ -212,12 +212,13 @@ export const prepareExportConfig = async (
 		schema?: string;
 		dialect?: Dialect;
 		sql: boolean;
+		casing?: CasingType;
 	},
 	from: 'config' | 'cli',
 ): Promise<ExportConfig> => {
 	const config = from === 'config' ? await drizzleConfigFromFile(options.config, true) : options;
 
-	const { schema, dialect, sql } = config;
+	const { schema, dialect, sql, casing } = config;
 
 	if (!schema || !dialect) {
 		console.log(error('Please provide required params:'));
@@ -235,6 +236,7 @@ export const prepareExportConfig = async (
 		dialect: dialect,
 		schema: schema,
 		sql: sql,
+		casing: casing ?? "camelCase",
 	};
 };
 
