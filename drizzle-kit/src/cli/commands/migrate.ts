@@ -2,12 +2,11 @@ import fs from 'fs';
 import {
 	prepareMySqlDbPushSnapshot,
 	prepareMySqlMigrationSnapshot,
-	preparePgDbPushSnapshot,
 	preparePgMigrationSnapshot,
+	prepareSQLiteDbPushSnapshot,
 	prepareSingleStoreDbPushSnapshot,
 	prepareSingleStoreMigrationSnapshot,
-	prepareSQLiteDbPushSnapshot,
-	prepareSqliteMigrationSnapshot,
+	prepareSqliteMigrationSnapshot
 } from '../../migrationPreparator';
 
 import chalk from 'chalk';
@@ -16,15 +15,10 @@ import path, { join } from 'path';
 import { SingleStoreSchema, singlestoreSchema, squashSingleStoreScheme } from 'src/serializer/singlestoreSchema';
 import { TypeOf } from 'zod';
 import type { CommonSchema } from '../../schemaValidator';
-import { MySqlSchema, mysqlSchema, squashMysqlScheme, ViewSquashed } from '../../serializer/mysqlSchema';
-import { PgSchema, pgSchema, Policy, Role, squashPgScheme, View } from '../../serializer/pgSchema';
-import { SQLiteSchema, sqliteSchema, squashSqliteScheme, View as SQLiteView } from '../../serializer/sqliteSchema';
+import { MySqlSchema, ViewSquashed, mysqlSchema, squashMysqlScheme } from '../../serializer/mysqlSchema';
+import { PgSchema, Policy, Role, View, pgSchema, squashPgScheme } from '../../serializer/pgSchema';
+import { SQLiteSchema, View as SQLiteView, sqliteSchema, squashSqliteScheme } from '../../serializer/sqliteSchema';
 import {
-	applyLibSQLSnapshotsDiff,
-	applyMysqlSnapshotsDiff,
-	applyPgSnapshotsDiff,
-	applySingleStoreSnapshotsDiff,
-	applySqliteSnapshotsDiff,
 	Column,
 	ColumnsResolverInput,
 	ColumnsResolverOutput,
@@ -40,18 +34,23 @@ import {
 	Table,
 	TablePolicyResolverInput,
 	TablePolicyResolverOutput,
+	applyLibSQLSnapshotsDiff,
+	applyMysqlSnapshotsDiff,
+	applyPgSnapshotsDiff,
+	applySingleStoreSnapshotsDiff,
+	applySqliteSnapshotsDiff,
 } from '../../snapshotsDiffer';
-import { assertV1OutFolder, Journal, prepareMigrationFolder } from '../../utils';
+import { Journal, assertV1OutFolder, prepareMigrationFolder } from '../../utils';
 import { prepareMigrationMetadata } from '../../utils/words';
 import { CasingType, Driver, Prefix } from '../validations/common';
 import { withStyle } from '../validations/outputs';
 import {
-	isRenamePromptItem,
 	RenamePropmtItem,
 	ResolveColumnSelect,
 	ResolveSchemasSelect,
 	ResolveSelect,
 	ResolveSelectNamed,
+	isRenamePromptItem,
 	schema,
 } from '../views';
 import { ExportConfig, GenerateConfig } from './utils';
@@ -375,7 +374,7 @@ export const prepareAndExportPg = async (config: ExportConfig) => {
 		const { prev, cur } = await preparePgMigrationSnapshot(
 			[], // no snapshots before
 			schemaPath,
-			undefined,
+			config.casing,
 		);
 
 		const validatedPrev = pgSchema.parse(prev);
