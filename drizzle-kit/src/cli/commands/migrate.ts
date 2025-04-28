@@ -375,7 +375,7 @@ export const prepareAndExportPg = async (config: ExportConfig) => {
 		const { prev, cur } = await preparePgMigrationSnapshot(
 			[], // no snapshots before
 			schemaPath,
-			undefined,
+			config.casing,
 		);
 
 		const validatedPrev = pgSchema.parse(prev);

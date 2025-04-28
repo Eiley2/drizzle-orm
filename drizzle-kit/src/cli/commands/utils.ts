@@ -154,6 +154,7 @@ export type ExportConfig = {
 	dialect: Dialect;
 	schema: string | string[];
 	sql: boolean;
+	casing?: CasingType;
 };
 
 export const prepareGenerateConfig = async (
@@ -212,6 +213,7 @@ export const prepareExportConfig = async (
 		schema?: string;
 		dialect?: Dialect;
 		sql: boolean;
+		casing?: CasingType;
 	},
 	from: 'config' | 'cli',
 ): Promise<ExportConfig> => {
@@ -235,6 +237,7 @@ export const prepareExportConfig = async (
 		dialect: dialect,
 		schema: schema,
 		sql: sql,
+		casing: options.casing ?? "camelCase",
 	};
 };
 
