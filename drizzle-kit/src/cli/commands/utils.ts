@@ -219,7 +219,7 @@ export const prepareExportConfig = async (
 ): Promise<ExportConfig> => {
 	const config = from === 'config' ? await drizzleConfigFromFile(options.config, true) : options;
 
-	const { schema, dialect, sql } = config;
+	const { schema, dialect, sql, casing } = config;
 
 	if (!schema || !dialect) {
 		console.log(error('Please provide required params:'));
@@ -237,7 +237,7 @@ export const prepareExportConfig = async (
 		dialect: dialect,
 		schema: schema,
 		sql: sql,
-		casing: options.casing ?? "camelCase",
+		casing: casing,
 	};
 };
 
